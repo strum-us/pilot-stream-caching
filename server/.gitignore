@@ -1,0 +1,13 @@
+node_modules
+package-lock.json
+yarn.lock
+config/storageConfig.ts
+config/secretkey.ts
+config/testStorage.ts
+config/google*
+config/*.pem
+*.pem
+dev
+build
+public
+.favorites.json

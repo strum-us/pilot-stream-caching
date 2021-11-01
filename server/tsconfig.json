@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "lib": [
+      "dom",
+      "es6",
+      "es2017",
+      "esnext.asynciterable"
+    ],
+    "sourceMap": true,
+    "outDir": "./dist",
+    "moduleResolution": "node",
+    "removeComments": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["./src/*"],
+      "config/*": ["./config/*"],
+      "@protocols/*": ["../protocols/*"],
+      "@graphql/*": ["./src/graphql/*"],
+      "@modules/*": ["./modules/*"],
+      "@middlewares/*": ["./src/middlewares/*"]
+    },
+  },
+  "exclude": [
+    "node_modules", "**/node_modules/*", "**/*.test.ts", "**/*.stories.tsx"
+  ],
+  "include": [
+    "src",
+    "config",
+    "config/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.ts"
+  ]
+}

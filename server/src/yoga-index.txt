@@ -1,0 +1,151 @@
+import { GraphQLServer, PubSub } from 'graphql-yoga'
+import { accountIdFromToken, generateJwtToken } from '@middlewares/auth/token'
+import { clientDomain, googleAuthScope } from '../config/serverenv'
+
+import User from './database/user'
+import bodyParser from 'body-parser'
+import { getSchema } from './schema'
+// import cors from 'cors'
+import { initExpressRouters } from 'src/express'
+import { isGuestAccount } from 'src/middlewares/auth'
+// import logger from 'morgan'
+import passport from 'passport'
+import sequelize from './database/database'
+
+async function main() {
+  const PORT = process.env.PORT || 3000
+  const pubsub = new PubSub()
+
+  const schema = await getSchema()
+
+  const server = new GraphQLServer({
+    schema,
+    context: async (req) => {
+      const { request } = req
+      const {
+        connection: { context = null } = {},
+      } = req
+
+      const token: any = request?.headers?.token
+      console.log('----------', { token: token?.slice(0, 10) })
+      if (token) {
+        const accountId = accountIdFromToken(token)
+        // TODO: NEED TO FIX, change it to Redis for performance
+        let user: User | null = null
+        try {
+          if (accountId) {
+            user = await sequelize.getRepository(User).findOne({ where: { id: accountId } })
+          }
+        } catch (e) {
+          console.log('token user not found')
+        }
+        return {
+          db: sequelize,
+          pubsub,
+          token,
+          accountId,
+          userId: user?.id,
+          user,
+        }
+      }
+
+      return {
+        pubsub,
+        nothing: req,
+      }
+    },
+  })
+
+  // 2. init graphql
+  try {
+    process.setMaxListeners(10000)
+
+    // const { url, subscriptionsUrl } = await server.listen(PORT)
+    await server.start({
+      port: PORT,
+      endpoint: '/graphql',
+      subscriptions: {
+        path: '/subscription',
+        onConnect: (connectionParams: any, socket: any, context: any) => {
+          const { token } = connectionParams
+          const accountId = accountIdFromToken(token)
+          socket.accountId = accountId
+
+          const timestamp = new Date()
+          // console.log('subscription connected', { accountId, token, timestamp })
+          console.log('subscription connected', { accountId, timestamp })
+        },
+        onDisconnect: async (socket: any, context: any) => {
+          const timestamp = new Date()
+          console.log('disconnect', { accountId: socket.accountId, timestamp })
+        },
+      },
+    })
+    console.log(`graphql_server running on ${PORT}`)
+    // console.log(`🚀 Server ready at ${url}`);
+    // console.log(`🚀 Subscriptions ready at ${subscriptionsUrl}`)
+  } catch (e) {
+    console.error('graphql init error', e)
+  }
+
+  // 3. express server
+  const express = server.express
+  // for testing, allowing other origins
+  express.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*')
+    next()
+  })
+  // server.express.use(cors(corsoption))
+
+  // express.use(logger('dev'))
+  express.use(bodyParser.json())
+  express.use(bodyParser.urlencoded({ extended: true }))
+  // express.use(cors(corsOptions))
+
+  express.get('/auth/google', passport.authenticate('google', {
+    scope: googleAuthScope,
+    accessType: 'offline',
+    prompt: 'consent',
+  }))
+
+  express.get('/auth/google/callback', (req, res, next) => {
+    passport.authenticate('google', (err, user) => {
+      if (err) return next(err)
+      if (!user) return res.redirect('/login')
+
+      if (user._json?.email) {
+        const token = generateJwtToken(user._json?.email)
+
+        res.redirect(`${clientDomain}?token=${token}`)
+      } else {
+        res.redirect(`${clientDomain}`)
+      }
+    })(req, res, next)
+  })
+
+  express.get('/oauth', (req, res, next) => {
+    const { token } = req.query
+    console.log({ token })
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <title>Opening Issuenote App</title>
+      </head>
+      <body>
+        <div>Issuenote opening...</div>
+        <script>
+          window.location = 'issuenote://${token}'
+        </script>
+      </body>
+      </html>
+      `)
+  })
+  // init routers
+  initExpressRouters(express)
+}
+
+main().catch((err) => {
+  console.error(err)
+})

@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+   <head>
+      <style>body,html{height:100%;width:100%;overflow:hidden;overscroll-behavior:none}</style>
+      <meta charset="utf-8">
+      <title>Issuenote</title>
+      <link rel="preconnect" href="https://fonts.gstatic.com">
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,500italic,600italic,700italic,800italic,400,300,500,600,700,800" rel="stylesheet" type="text/css">
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
+      <meta name="title" content="issuenote">
+      <meta name="description" content="issuenote">
+      <link rel="icon" href="/logo.svg">
+      <link href="/assets/css/app.81f984124244d4add19b.css" rel="stylesheet">
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+   </head>
+   <body class="bg-display-mode" oncontextmenu="return!1">
+      <div id="preloader">
+         <div id="status">connecting...</div>
+      </div>
+      <div id="app"></div>
+
+      <script>
+         function loadApp() {
+            const script1 = document.createElement('script')
+            const script2 = document.createElement('script')
+            script1.src = "/runtime~app.9e613554.js"
+            script2.src = "/app.9e613554.js"
+            document.body.appendChild(script1)
+            document.body.appendChild(script2)
+         }
+
+        if (window.location.pathname === '/') {
+          const authToken = localStorage.getItem('authToken')
+          const token = JSON.parse(authToken)
+          if (token || token?.length > 0) {
+             const query = 'https://api.issuenote.app/quda/account/tokenSignin?token=' + token
+             console.log({ query })
+              axios.post(query)
+                  .then(function (res){
+                      if (res?.data?.result === 'authenticated') {
+                          console.log('authenticated')
+                          loadApp()
+                      } else {
+                          console.log('not authenticated', res?.data?.result)
+                          window.location.replace('./index.html')
+                      }
+                  })
+          } else {
+            window.location.replace('./index.html')
+          }
+        } else {
+         loadApp()
+        }
+      </script>
+      <!-- <script src="/runtime~app.9e613554.js"></script>
+      <script src="/app.9e613554.js"></script> -->
+   </body>
+</html>

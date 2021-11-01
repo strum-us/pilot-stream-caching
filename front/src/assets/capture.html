@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+
+        html, body, div {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: crosshair;
+        }
+
+        .mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .image-canvas {
+            position: absolute;
+            display: none;
+            z-index: 1;
+        }
+
+        .screen-image {
+            min-width: 100px;
+            min-height: 100px;
+            /* background: gold; */
+            max-width: 1000px;
+            max-height: 1000px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <div id="js-mask" class="mask"></div> -->
+    <div id="capture"></div>
+    
+
+    <!-- <script>
+
+        const { desktopCapturer, remote, ipcRenderer } = require('electron')
+        const getSourcesOptions = { types: ['screen'] } 
+        
+        let box = null
+        let windowCanvas = null
+        let originSize = null
+        let scaleFactor = 1
+        // thumbnail size option : thumbnailSize: { height: 1000, width: 1000} 
+        const screen = desktopCapturer.getSources(getSourcesOptions).then(( sources ) => {
+            // screen id 가져오기 위해서 'desktopCapturer' 사용
+            const findCurrentScreenSource = sources.find((source) => {
+                return source.name === 'Entire Screen' || source.name === 'Screen 1'
+            })
+            if (!findCurrentScreenSource) {
+                console.log('ERROR: (find current screen source ...) ')
+                return 
+            }
+
+            const videoElement = document.createElement('video')
+            videoElement.muted = true
+            videoElement.autoplay = true
+            videoElement.controls = true
+            videoElement.style.cssText = 'position:absolute;top:-10000px;left:-10000px;'
+            document.body.appendChild(videoElement)
+            const constraints = {
+                audio: false,
+                video: {
+                    mandatory: {
+                        chromeMediaSource: 'desktop',
+                        chromeMediaSourceId: findCurrentScreenSource.id,
+                        minWidth: 1280,
+                        minHeight: 720,
+                        maxWidth: 8000,
+                        maxHeight: 8000,
+                    }
+                }
+            }
+            
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then((stream) => {
+                    videoElement.srcObject = stream
+                    videoElement.onloadeddata = () => {
+                        originSize = {w: videoElement.videoWidth, h:videoElement.videoHeight}
+
+                        // set video element size
+                        videoElement.style.height = originSize.h + 'px' 
+                        videoElement.style.width = originSize.w + 'px'
+                        
+                        windowCanvas = document.createElement('canvas')
+                        // set canvas element size
+                        windowCanvas.width = videoElement.videoWidth
+                        windowCanvas.height = videoElement.videoHeight
+
+                        // draw video
+                        const context = windowCanvas.getContext('2d')
+                        context.drawImage(videoElement, 0, 0)
+
+                        
+                        
+                        // cleanup video stream !
+                        videoElement.remove()
+                        stream.getTracks().forEach((track) => track.stop())
+                    }
+                })
+                .catch((err) => {
+                    console.log({getUserMediaError: err})
+                })
+        })
+
+        cropScreen()
+        function cropScreen() {
+            const dimScreen = document.createElement('div')
+            const cropBox = document.createElement('div')
+            const pointerPos = document.createElement('p')
+            
+            cropBox.style.cssText = `
+                position: absolute; left:0px; top:0px; width: 0px; height: 0px;
+                background: #00000040;
+                pointer-events: none;
+            `
+            
+            pointerPos.style.cssText = 'position: absolute; left:0px; top:0px; background: #ffffff60; border-radius: 8px; padding: 4px 8px;'
+            
+
+            dimScreen.style.cssText = 'position: absolute; left:0px; top:0px; right:0px; bottom: 0px; cursor: crosshair;'
+            dimScreen.onmousedown = (e) => {
+                box = { x: e.clientX, y: e.clientY, w: 0, h: 0 }
+            }
+            
+            dimScreen.onmousemove = (e) => {
+                pointerPos.innerHTML = `${e.clientX} ${e.clientY}`
+                pointerPos.style.left = `${e.clientX + 12}px`
+                pointerPos.style.top = `${e.clientY + 12}px`
+                
+                if (!box) return
+                box = { x: box.x, y: box.y, w: e.clientX - box.x, h: e.clientY - box.y }
+                cropBox.style.left = `${box.x}px`
+                cropBox.style.top = `${box.y}px`
+                cropBox.style.width = `${box.w}px`
+                cropBox.style.height = `${box.h}px`
+            }
+            
+            dimScreen.onmouseup = (e) => {
+                box = { x: box.x, y: box.y, w: e.clientX - box.x, h: e.clientY - box.y }
+                cropped()
+                dimScreen.remove()
+                cropBox.remove()
+            }
+
+            document.body.appendChild(cropBox)
+            document.body.appendChild(pointerPos)
+            document.body.appendChild(dimScreen)
+
+        }
+
+        async function cropped() {
+            if (!box || !originSize) {
+                return 
+            }
+
+            // 좌표 .. 
+            box = {
+                x: box.x * devicePixelRatio,
+                y: box.y * devicePixelRatio,
+                w: box.w * devicePixelRatio,
+                h: box.h * devicePixelRatio,
+            }
+            
+            const cropCanvas = document.createElement('canvas')
+            cropCanvas.width = box.w
+            cropCanvas.height = box.h
+            const ctx = cropCanvas.getContext('2d')
+
+            ctx.drawImage(
+                windowCanvas, 
+                box.x, box.y, box.w, box.h,
+                0, 0, box.w, box.h,
+            )
+
+            
+            // main window로 이미지 url 보냄 
+            // main process에서 이벤트 받고
+            // captureWindow.close() 호출 
+            const cropUrl = cropCanvas.toDataURL()
+            // ipcRenderer.send('open-capture-image', { 
+            //     img: cropUrl
+            // })
+            electron.ipcRenderer.send('open-router', {
+                blobUrl: cropUrl,
+                extension: 'jpg',
+            })
+        }
+
+        
+    </script> -->
+
+</body>
+</html>
+

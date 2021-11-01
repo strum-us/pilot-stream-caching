@@ -1,0 +1,45 @@
+import { Point } from './Point';
+export declare class Rect {
+    origin: Point;
+    size: Point;
+    constructor(x: number, y: number, w: number, h: number);
+    clone(): Rect;
+    get toGQL(): {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
+    get x(): number;
+    get y(): number;
+    get minX(): number;
+    set minX(value: number);
+    get minY(): number;
+    set minY(value: number);
+    get maxX(): number;
+    set maxX(value: number);
+    get maxY(): number;
+    set maxY(value: number);
+    get width(): number;
+    set width(value: number);
+    get height(): number;
+    set height(value: number);
+    get distance(): number;
+    contains(x: number, y: number): boolean;
+    get centerX(): number;
+    get centerY(): number;
+    get center(): Point;
+    get rb(): Point;
+    set rb(point: Point);
+    inflate(x: number, y: number): void;
+    translate(x: number, y: number): Rect;
+    divide(ratio: number): Rect;
+    scale(ratio: number): Rect;
+    union(rect: Rect): Rect;
+    intersect(rect: Rect): boolean;
+    intersectionRect(rect: Rect): Rect | null;
+    normalized(): Rect;
+    log(title: string): void;
+    get string(): string;
+    testExpected(title: string, x: number, y: number, w: number, h: number): void;
+}
