@@ -1,0 +1,269 @@
+{
+  "name": "issuenote",
+  "version": "0.1.29",
+  "private": true,
+  "main": "src/electron.js",
+  "scripts": {
+    "schema": "apollo schema:download --endpoint=http://localhost:3000/graphql schema.json",
+    "gen": "yarn schema && cd graphql-gen && yarn gen",
+    "rover": "rover graph introspect http://localhost:3000/graphql | APOLLO_KEY=service:quda-app:ygmRdZujinTbtUbn_OPJUA rover graph publish quda-app@current --schema -",
+    "sync": "yarn rover && yarn gen",
+    "doc": "cd .. && cd @strum/doc-editor && yarn rollup",
+    "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
+    "build-main": "cross-env NODE_ENV=production webpack --config ./configs/webpack.config.main.prod.babel.js --colors",
+    "build-renderer": "cross-env NODE_ENV=production webpack --config ./configs/webpack.config.renderer.prod.babel.js --colors",
+    "build:style": "tailwind build src/styles/index.css -o src/styles/tailwind.css",
+    "build:css": "postcss -w src/styles/index.css -o src/styles/tailwind.css",
+    "web:build": "webpack --mode production --config webpack.config.production.js --progress",
+    "start": "webpack serve --mode development --config webpack.config.development.js --inline --hot --port 5030 --history-api-fallback --progress",
+    "e:build": "webpack --config ./webpack.config.electron.js --progress",
+    "e:start": "electron ./src/electron.js",
+    "e:dev": "cd electron && yarn && yarn e:electron && cd .. && electron ./src/electron.dev.js",
+    "package:xos": "yarn e:build && electron-builder build --mac --publish never",
+    "package:win32": "electron-builder build --win --ia32 --publish never",
+    "package:win64": "yarn e:build && yarn electron-builder build --win --x64 --publish never",
+    "package:win": "yarn package:win32 && yarn package:win64",
+    "publish-s3": "yarn e:build && electron-builder build --publish always",
+    "publish-s3-win": "yarn e:build && yarn electron-builder build --win --x64 --publish always",
+    "package:deploy": "aws s3 cp ./release/*.dmg s3://strum-app-resources/issuenote --acl public-read",
+    "clean": "rm -rf src/modules/live-session/node_modules && rm -rf src/modules/ui-pack/node_modules && rm -rf src/modules/system-ui/node_modules && rm -rf src/modules/application/node_modules && rm -rf src/modules/chat/node_modules && rm -rf src/modules/doc-editor/node_modules && rm -rf src/modules/filedrop/node_modules",
+    "update": "yarn && cd src/modules/live-session && yarn && cd ../ui-pack && yarn && cd ../system-ui && yarn && cd ../application && yarn && cd ../chat && yarn && cd ../doc-editor && yarn && cd ../filedrop && yarn",
+    "rover2": "APOLLO_KEY=service:quda-app-hu82si:wDLcgXvqYJGmoTciRyot_w rover graph introspect http://localhost:3000/graphql |rover graph publish quda-app-hu82si@current --schema -",
+    "sync2": "yarn rover2 && yarn gen",
+    "d1": "aws s3 cp --recursive ./build s3://quda-website --acl public-read",
+    "d3": "aws cloudfront create-invalidation --distribution-id E3Q8GHYJAPPCA2 --paths '/*'",
+    "dapp": "aws s3 cp ./release/issuenote+0.1.24.msi s3://quda-app-release --acl public-read",
+    "dapp:cloud": "aws cloudfront create-invalidation --distribution-id ELE27B2S0VCIM --paths '/*'",
+    "winkey": "NQPGJ-PMRBR-B69JT-89MYW-RX8XC",
+    "prod": "yarn web:build && yarn d1 && yarn d3"
+  },
+  "author": {
+    "name": "Strum"
+  },
+  "build": {
+    "productName": "issuenote",
+    "appId": "co.strum.issuenote",
+    "mac": {
+      "icon": "./e-build/icon.png",
+      "hardenedRuntime": true,
+      "entitlements": "./e-build/entitlements.mac.plist",
+      "extendInfo": {
+        "NSCameraUsageDescription": "This app requires camera access to record video.",
+        "NSMicrophoneUsageDescription": "This app requires microphone access to record audio."
+      },
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "afterSign": "./e-build/afterSignHook.js",
+    "files": [
+      "node_modules/",
+      "package.json",
+      "./app-build/**/*",
+      "./src/electron.js",
+      "./src/assets/**/*"
+    ],
+    "extends": null,
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "msi"
+      ],
+      "icon": "./e-build/win-icon.png"
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "rpm",
+        "AppImage"
+      ],
+      "category": "Development"
+    },
+    "directories": {
+      "buildResources": "src/assets",
+      "output": "release"
+    },
+    "extraResources": [
+      "./resources/**"
+    ],
+    "publish": {
+      "provider": "s3",
+      "bucket": "quda-app-release",
+      "region": "ap-northeast-2",
+      "acl": "public-read"
+    },
+    "protocols": {
+      "name": "issuenote",
+      "schemes": [
+        "issuenote"
+      ]
+    }
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/plugin-transform-runtime": "^7.15.0",
+    "@babel/preset-react": "^7.12.1",
+    "@babel/runtime": "^7.15.3",
+    "@graphql-eslint/eslint-plugin": "^2.0.1",
+    "@sentry/integrations": "^6.3.6",
+    "@sentry/node": "^6.2.3",
+    "@sentry/react": "^6.3.6",
+    "@sentry/tracing": "^6.3.6",
+    "@svgr/webpack": "^5.4.0",
+    "@tailwindcss/aspect-ratio": "^0.2.0",
+    "@tailwindcss/custom-forms": "^0.2.1",
+    "@tailwindcss/forms": "^0.2.1",
+    "@tailwindcss/typography": "^0.3.1",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "@types/dom-mediacapture-record": "^1.0.10",
+    "@types/faker": "^5.5.3",
+    "@types/google.analytics": "^0.0.40",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-beautiful-dnd": "^13.1.2",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/underscore": "^1.11.3",
+    "@types/yup": "^0.29.11",
+    "@typescript-eslint/eslint-plugin": "^3.8.0",
+    "@typescript-eslint/parser": "^3.8.0",
+    "@webpack-cli/serve": "^1.6.1",
+    "apollo": "^2.33.6",
+    "autoprefixer": "^10.3.1",
+    "babel-loader": "^8.1.0",
+    "chokidar-cli": "^2.1.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "concurrently": "^6.0.2",
+    "copy-webpack-plugin": "^8.1.1",
+    "cross-env": "^7.0.3",
+    "css-loader": "^5.0.0",
+    "cssnano": "^4.1.10",
+    "dotenv": "^10.0.0",
+    "dotenv-webpack": "^6.0.0",
+    "electron": "^12.0.7",
+    "electron-builder": "22.11.1",
+    "electron-installer-codesign": "^0.6.0",
+    "electron-notarize": "^1.1.1",
+    "eslint": "^7.3.1",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^3.3.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-formatter-pretty": "^2.0.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-import-resolver-webpack": "^0.12.2",
+    "eslint-plugin-better-styled-components": "^1.1.2",
+    "eslint-plugin-compat": "^2.6.3",
+    "eslint-plugin-graphql": "^4.0.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jest": "^23.20.0",
+    "eslint-plugin-jsx-a11y": "6.1.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.14.3",
+    "eslint-plugin-react-hooks": "^4.0.8",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-testcafe": "^0.2.1",
+    "html-webpack-plugin": "^4.5.0",
+    "mini-css-extract-plugin": "^1.2.1",
+    "postcss": "^8.3.6",
+    "postcss-browser-reporter": "^0.6.0",
+    "postcss-cli": "^8.3.1",
+    "postcss-import": "^12.0.1",
+    "postcss-loader": "^4.0.4",
+    "postcss-preset-env": "^6.7.0",
+    "postcss-reporter": "^6.0.1",
+    "postcss-url": "^8.0.0",
+    "prettier": "^2.1.2",
+    "react-json-pretty": "^2.2.0",
+    "style-loader": "^2.0.0",
+    "tailwindcss": "^2.2.7",
+    "ts-loader": "8.0.1",
+    "typescript": "^4.1.2",
+    "url-loader": "^4.1.1",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^4.5.0",
+    "webpack-dev-server": "^3.11.0",
+    "webpack-merge": "^5.2.0"
+  },
+  "dependencies": {
+    "@amplitude/node": "^1.9.0",
+    "@apollo/client": "^3.0.0",
+    "@headlessui/react": "^1.4.0",
+    "@heroicons/react": "^1.0.4",
+    "@strum/common": "file:../@strum-dists/common/dist",
+    "auto-launch": "^5.0.5",
+    "axios": "^0.21.1",
+    "clipboard-copy": "^4.0.1",
+    "date-fns": "^2.23.0",
+    "dayjs": "^1.10.6",
+    "electron-log": "^4.3.5",
+    "electron-updater": "^4.3.8",
+    "email-validator": "^2.0.4",
+    "faker": "^5.5.3",
+    "file-loader": "^6.2.0",
+    "formik": "^2.2.9",
+    "gh-pages": "^3.1.0",
+    "graphql": "^15.3.0",
+    "html-loader": "^2.1.2",
+    "moment": "^2.29.1",
+    "path": "^0.12.7",
+    "pdfjs-dist": "2.5.207",
+    "prettysize": "^2.0.0",
+    "qs": "^6.10.1",
+    "react": "^17.0.2",
+    "react-beautiful-dnd": "^13.1.0",
+    "react-dnd": "^10.0.2",
+    "react-dnd-html5-backend": "^10.0.2",
+    "react-dom": "^17.0.2",
+    "react-dropzone": "^11.3.4",
+    "react-google-login": "^5.2.2",
+    "react-highlight-words": "^0.17.0",
+    "react-hot-loader": "^4.13.0",
+    "react-resize-detector": "^6.7.6",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
+    "react-textarea-autosize": "^8.3.3",
+    "react-tooltip-lite": "^1.12.0",
+    "serve": "^11.3.2",
+    "short-uuid": "^4.2.0",
+    "styled-components": "^5.3.0",
+    "underscore": "^1.13.1",
+    "yup": "^0.32.9"
+  }
+}

@@ -1,0 +1,6 @@
+owner: kmynyng
+repo: strum-chat
+provider: github
+private: true
+updaterCacheDirName: strumchat-updater
+token: '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'

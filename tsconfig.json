@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "baseUrl": "./",
+    "rootDir": "../",
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noUnusedLocals": false,
+    "noImplicitAny": false,
+    "pretty": true,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "noLib": false,
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "lib": ["es2018", "dom", "es5", "es6", "es2019"],
+    "paths": {
+      "src/*": ["./src/*"],
+      "config/*": ["./src/config/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@states/*": ["./src/states/*"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@containers/*": ["./src/containers/*"],
+      "@components/*": ["./src/components/*"],
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@modules/*": ["./src/modules/*"],
+      "@protocols": ["../protocols"],
+    }
+  },
+  "include": [
+    "src", 
+  ],
+  "exclude": [
+    "node_modules", "**/node_modules/*", "**/*.test.ts", "**/*.stories.tsx"
+  ]
+
+}

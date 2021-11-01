@@ -1,0 +1,404 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* 참고: https://tailwindcss.com/docs/functions-and-directives */
+
+*:focus {
+  outline: none;
+}
+
+::selection {
+  /* @apply text-white bg-primary bg-opacity-60; */
+}
+
+body {
+  /* @apply text-base text-black; */
+  /* font-size: 14px; */
+}
+
+/*  
+? container
+*/
+
+.spa { 
+  /* @apply w-screen h-screen; */
+  width: 100%;
+  height: 100vh;
+}
+
+.full {
+  @apply w-full h-full;
+}
+
+.vail {
+  @apply fixed top-0 left-0 spa;
+  z-index: 10000;
+}
+
+.flex-row-center { 
+  @apply flex flex-row items-center justify-center;
+}
+
+.flex-col-center { 
+  @apply flex flex-col items-center justify-center;
+}
+
+.menu-container {
+  z-index: 20000;
+}
+
+div.btn:focus {
+  @apply ring-4 ring-offset-primary;
+}
+
+.max-w-100 {
+  max-width: 200px;
+}
+
+.max-w-200 {
+  max-width: 200px;
+}
+/*  
+? button
+*/
+
+
+.btn {
+  @apply px-4 py-2 rounded cursor-pointer select-none max-w-max hover:bg-opacity-80 whitespace-nowrap;
+}
+
+.btn-xs { 
+  @apply px-2 py-0.5 text-sm rounded cursor-pointer select-none max-w-max hover:bg-opacity-80;
+}
+
+.btn-text {
+  @apply cursor-pointer select-none whitespace-nowrap max-w-max;
+}
+
+.btn-text-primary {
+  @apply px-1 cursor-pointer select-none text-dim-sub whitespace-nowrap max-w-max hover:text-primary;
+}
+
+.setting .btn {
+  @apply px-4 py-1 text-sm rounded cursor-pointer select-none max-w-max hover:bg-opacity-80;
+}
+
+.btn-gray {
+  @apply border border-solid text-dim border-dim max-w-max hover:bg-dim-light;
+}
+
+.btn-primary {
+  @apply text-white max-w-max bg-primary hover:bg-opacity-90;
+}
+
+.btn-negative {
+  @apply text-white max-w-max hover:bg-opacity-90 bg-negative;
+}
+
+.btn-ghost {
+  @apply bg-white border border-solid text-primary max-w-max hover:bg-dim-light border-primary;
+}
+
+.btn-negative-ghost {
+  @apply bg-white border border-solid text-negative border-negative max-w-max hover:bg-dim-light;
+}
+
+.btn-gray-ghost {
+  @apply bg-white border border-solid text-dim border-dim hover:bg-dim-light; /* max-w-max*/
+}
+
+.btn.long {
+  @apply w-full max-w-full flex-row-center;
+}
+
+.btn-simple {
+  @apply rounded cursor-pointer select-none hover:bg-dim-sub whitespace-nowrap;
+}
+
+/*  
+? message item
+*/
+
+@keyframes message-slide-left {
+  0% {
+      /* margin-left: -200px; */
+      opacity: 0;
+  }
+  100% {
+      /* margin-left: 0; */
+      opacity: 1;
+  }
+}
+
+.message-item {
+  /* animation: message-slide-left ease-out 0.2s; */
+}
+
+.self .flex-row {
+  @apply flex-row-reverse space-x-reverse ;
+}
+
+/* .self .popup-menu .flex-row {
+  @apply flex-row space-x-reverse ;
+} */
+
+.message-content {
+  @apply border border-solid border-dim-light w-max;
+  max-width: 100%;
+}
+
+.self .message-content {
+  @apply border-none border-dim-light;
+}
+
+/*  
+? input
+*/
+
+
+/*  
+? text
+*/
+
+.error-message {
+  @apply text-sm mt-0.5 text-negative select-none;
+}
+
+/*  
+? image
+*/
+
+img.hover-blur:hover {
+  filter: brightness(110%);
+}
+
+.group .hover-view {
+  visibility: hidden;
+}
+
+.group:hover > .hover-view {
+  visibility: visible;
+}
+
+.react-tooltip-lite {
+  background: #333;
+  color: white;
+  border-radius: 4px;
+}
+
+.react-tooltip-lite-arrow {
+  border-color: #333;
+}
+
+.app-titlebar {
+  -webkit-app-region: drag;
+  flex: 0 0 40px;
+  height: 40px;
+}
+
+
+/* keyframe ----------------------------------------------------------- */
+div.room-list {
+  width: 320px;
+  transition: all ease-out 0.2s;
+}
+
+div.room-list.slide-close {
+  width: 0px;
+}
+
+
+/* whiteboard ui ----------------------------------------------------------- */
+section.messages {
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: 400px;
+  transition: all ease-out 0.2s;
+}
+
+section:focus {
+  outline: none;
+}
+
+section.board {
+  flex-grow: 0.001;
+  flex-shrink: 0;
+  flex-basis: 60px;
+  transition: all ease-out 0.2s;
+}
+
+.slide-animation section.messages {
+  flex-grow: 0.001;
+}
+
+.slide-animation section.board {
+  flex-grow: 1;
+}
+
+/* color ----------------------------------------------------------- */
+
+.bg-display-mode {
+  @apply text-black bg-white;
+  /* @apply text-black bg-white dark:bg-black dark:text-white; */
+}
+
+/* .bg-display-mode {
+  @apply text-black bg-white dark:bg-black dark:text-white;
+} */
+
+
+
+/* scroll bar ----------------------------------------------------------- */
+.overflow-y-auto::-webkit-scrollbar {
+  background: transparent;
+  width: 8px;
+}
+
+.overflow-y-auto:hover::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 12px;
+  width: 12px;
+  border: 1px solid transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+  opacity: 0;
+  border-radius: 10px;
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+  background: transparent;
+  height: 8px;
+}
+
+.overflow-x-auto:hover::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 12px;
+  height: 12px;
+  border: 1px solid transparent;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: transparent;
+  opacity: 0;
+  border-radius: 10px;
+}
+
+/* typo ----------------------------------------------------------- */
+.typo-normal {
+  @apply text-base;
+}
+
+.typo-sub {
+  @apply text-sm;
+}
+
+.typo-title {
+  @apply text-lg;
+}
+
+.typo-info {
+  @apply text-sm text-dim;
+}
+
+.typo-subInfo {
+  @apply text-sm text-dim-sub; 
+}
+
+/* label ----------------------------------------------------------- */
+.form-title {
+  @apply text-3xl font-semibold select-none;
+}
+.form-sub {
+  @apply select-none text-dim-sub;
+}
+.form-label {
+  @apply mb-1 ;
+}
+.form-input {
+  @apply px-3 py-2 text-sm border border-solid rounded outline-none bg-dim-light border-dim-border opacity-70 focus:opacity-100;
+}
+
+
+/* doc editor ----------------------------------------------------------- */
+/*
+  size: 32px 
+  svg icon: 18px
+ */
+.board-container {
+  position: relative;
+  transition: all 0.4s ease-out;
+}
+
+.board-container.board-popup-opned {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  bottom: 20px;
+  right: 20px;
+  height: auto;
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 100000;
+}
+
+.editor-icon-btn {
+  @apply flex-shrink-0 w-8 h-8 bg-opacity-50 cursor-pointer bg-dim-light text-dim rounded-xl hover:bg-opacity-90 flex-col-center;
+}
+.editor-text-btn {
+  @apply flex-shrink-0 h-8 max-w-xs px-2 bg-opacity-50 cursor-pointer bg-dim-light w-max text-dim rounded-xl hover:bg-opacity-90 flex-col-center;
+  min-width: 60px;
+}
+
+.editor-icon-btn-container {
+  @apply flex flex-row space-x-2 pointer-events-auto;
+}
+
+
+.drag-app {
+  -webkit-app-region: drag;
+}
+
+button:focus {
+  outline: none;
+}
+
+textarea:focus {
+  outline: none;
+}
+
+
+
+
+
+/* quda style ----------------------------------------------------------- */
+.onboarding-input {
+  outline: none;
+  border: 1px solid rgb(158, 158, 158);
+}
+
+.onboarding-input:focus {
+  outline: none;
+  border: 1px solid #439CEF;
+}
+
+.quda-primary-text {
+  color: #439CEF;
+  cursor: pointer;
+}
+.quda-primary-text:hover {
+  text-decoration: underline;
+}
+.quda-primary-grad-bg {
+  background: linear-gradient(180deg, #439CEF 0%, #205CD8 100%);
+}
+
+.quda-onboarding-container{
+  grid-template-rows: repeat(auto-fill, minmax(100%, auto));
+}
+.quda-onboarding-item {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  /* border: 1px solid #888; */
+}
