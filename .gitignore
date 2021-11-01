@@ -12,7 +12,7 @@ electron/node_modules
 /coverage
 
 # production
-/build
+# /build
 /dist
 /app-build
 /release
