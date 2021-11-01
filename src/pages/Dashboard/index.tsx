@@ -1,16 +1,30 @@
 import React, { useEffect, useRef, useState } from 'react'
 
 import { start } from 'repl'
+import { storeKeyNameFromField } from '@apollo/client/utilities'
 
 export function Dashboard() {
+  const [open, setOpen] = useState(false)
   return (
     <div>
-      <Recorder />
+      <div
+        className='px-4 py-2 cursor-pointer m-5 bg-primary text-white max-w-max'
+        onClick={() => setOpen(!open)}
+      >
+        {open ? 'leave' : 'join'}
+      </div>
+      {
+        open && <Recorder open={open} />
+      }
     </div>
   )
 }
 
-function Recorder() {
+type RecorderType = {
+  open?: boolean
+}
+
+function Recorder(props: RecorderType) {
   const chunkRef = useRef([])
   const cachingRef = useRef([])
   const recorderRef = useRef<MediaRecorder>(null)
@@ -44,6 +58,11 @@ function Recorder() {
       }
       recorderRef.current.start(1000)
     })
+
+    return () => {
+      recorderRef.current.stop()
+      localStream.current.getTracks().forEach((track) => track.stop())
+    }
   }, [])
 
   const handleClick = () => {
@@ -69,7 +88,7 @@ function Recorder() {
   return (
     <div>
       <div
-        className='px-4 py-2 cursor-pointer m-5 bg-primary text-white max-w-max'
+        className='px-4 py-2 cursor-pointer m-5 border border-primary text-primary max-w-max'
         onClick={handleClick}>
         {recording ? ' stop ' : 'start'}
       </div>
