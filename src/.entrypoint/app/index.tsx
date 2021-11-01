@@ -3,8 +3,6 @@ import '../../styles/tailwind.css'
 import '../../styles/index.css'
 import '../../assets/preloader.css'
 
-import * as Amplitude from '@amplitude/node';
-
 import { LocalToken } from '@strum/common'
 import Root from './Root'
 import { URLs } from '../../config/url'
@@ -12,7 +10,7 @@ import { initializeTokenLink } from '../../apollo'
 import { render } from 'react-dom'
 import { updateTokenByAuthenticate } from '../../controllers/account'
 
-export const amplitute = Amplitude.init('fd71c6df841abfa0074fdbc08efe8d4b');
+// export const amplitute = Amplitude.init('fd71c6df841abfa0074fdbc08efe8d4b');
 
 function renderApp() {
   render(<Root />, document.getElementById('app'))
@@ -48,16 +46,3 @@ const entry = async () => {
 // Here is the entry point of this application
 entry()
 
-
-amplitute.logEvent({
-  event_type: 'Node.js Event',
-  user_id: 'datamonster@gmail.com',
-  location_lat: 37.77,
-  location_lng: -122.39,
-  ip: '127.0.0.1',
-  event_properties: {
-    keyString: 'valueString',
-    keyInt: 11,
-    keyBool: true
-  }
-});
