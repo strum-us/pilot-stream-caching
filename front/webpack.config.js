@@ -9,7 +9,7 @@ module.exports = {
     children: true,
   },
   output: {
-    publicPath: '/',
+    publicPath: './',
   },
   devServer: {
     historyApiFallback: true,

@@ -1,27 +1,27 @@
 import { BrowserRouter, HashRouter, useHistory } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 
+import { AppFrame } from './AppFrame'
 import { AutoUpdateNotification } from './AutoUpdateNotification'
 // import { AutoUpdateNotification } from './AutoUpdateNotification'
 import { NetworkNotification } from './NetworkNotification'
 import Routes from './Routes'
-import { AppFrame } from './AppFrame'
 
 export default function Root() {
-  console.log({isElectron})
+  console.log({ isElectron })
   return (
     <React.StrictMode>
       {/* <div>open-router: {history?.location?.pathname} </div> */}
       <Router>
         {/* <ElectronGateway> */}
-        {isElectron 
-          ? <AutoUpdateNotification/> 
+        {isElectron
+          ? <AutoUpdateNotification />
           : null
         }
         {/* </ElectronGateway> */}
         {/* <NetworkNotification/> */}
         <AppFrame>
-          <Routes/>
+          <Routes />
         </AppFrame>
       </Router>
     </React.StrictMode>
@@ -39,8 +39,8 @@ function Router({ children }) {
   }
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       {children}
-    </BrowserRouter>
+    </HashRouter>
   )
 }

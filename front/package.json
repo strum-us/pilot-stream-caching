@@ -3,7 +3,7 @@
   "version": "0.1.29",
   "private": true,
   "main": "src/electron.js",
-  "homepage": "https://strum-us.github.io/pilot-stream-caching",
+  "homepage": ".",
   "scripts": {
     "schema": "apollo schema:download --endpoint=http://localhost:3000/graphql schema.json",
     "gen": "yarn schema && cd graphql-gen && yarn gen",
@@ -37,8 +37,7 @@
     "dapp:cloud": "aws cloudfront create-invalidation --distribution-id ELE27B2S0VCIM --paths '/*'",
     "winkey": "NQPGJ-PMRBR-B69JT-89MYW-RX8XC",
     "prod": "yarn web:build && yarn d1 && yarn d3",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "pages": "gh-pages -d build"
   },
   "author": {
     "name": "Strum"
