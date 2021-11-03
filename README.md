@@ -7,5 +7,4 @@ create `storageConfig.ts` in `server/config` folder following by `storageConfig.
 2. setup secretKey.ts
 create `secretKey.ts` in `server/config` folder following by `secretKey.example.ts`
 
-3. github pages link
-[click me](https://strum-us.github.io/pilot-stream-caching/#)
+3. github pages link 👉 [click me](https://strum-us.github.io/pilot-stream-caching/#)
